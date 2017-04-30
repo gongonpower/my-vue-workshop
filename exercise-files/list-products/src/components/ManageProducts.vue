@@ -1,10 +1,11 @@
 <template>
     <section>
         <save-product-form :product="productInForm" v-on:submit="onFormSave"></save-product-form>
-        <product-list :products="products"></product-list>
+        <product-list :products="products" v-on:edit="onEditClicked"></product-list>
     </section>
 </template>
 <script>
+import uuid from 'uuid';
 import ProductList from './ProductList'
 import SaveProductForm from './SaveProductForm'
 
@@ -48,13 +49,24 @@ export default {
     data: initialData,
     methods: {
         onFormSave(productData) {
-            productData.id = '24142442';
-            this.products.push(productData);
+            const index = this.products.findIndex((p) => p.id === productData.id);
+            if (index !== -1) {
+                this.products.splice(index, 1, productData);
+            } else {
+
+                productData.id = uuid.v4();
+                this.products.push(productData);
+            }
             this.resetProductInForm();
         },
         resetProductInForm() {
             this.productInForm = initialData().productInForm;
+        },
+        onEditClicked(productData) {
+            this.productInForm = { ...productData
+            };
         }
+
     }
 }
 </script>
